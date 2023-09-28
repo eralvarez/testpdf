@@ -54,11 +54,11 @@ options:
 env vars example:
 
 ```
-$AWS_DEFAULT_REGION=us-east-1
-$AWS_ACCOUNT_ID=086414240535
-$IMAGE_REPO_NAME=testpdf
-$IMAGE_TAG=latest
-$CONTAINER_NAME=testpdf
+AWS_DEFAULT_REGION=us-east-1
+AWS_ACCOUNT_ID=086414240535
+IMAGE_REPO_NAME=testpdf
+IMAGE_TAG=latest
+CONTAINER_NAME=testpdf
 ```
 
 - build specifications: `Use a buildspec file`
