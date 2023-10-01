@@ -81,4 +81,73 @@ Before continue to Step #4, we go to IAM in another tab and look for the recentl
 
 - `Create pipeline`
 
-## Try build
+## Try build in pipeline
+
+Go to [CodePipeline](https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines) and select your pipeline.
+
+If you see `Source` and `Build` stages working, we are good to go to [ECS](https://us-east-1.console.aws.amazon.com/ecs/v2/clusters?region=us-east-1) setup.
+
+## Elastic Container Service (ECS)
+
+First we go to [ECS](https://us-east-1.console.aws.amazon.com/ecs/v2/clusters?region=us-east-1) and click on `Create cluster`.
+
+### Cluster configuration
+
+- Cluster name: `testpdf`
+
+### Infrastructure
+
+- check AWS Fargate (serverless)
+
+Click `Create` button.
+
+### Task definitions
+
+Go to [task def site](https://us-east-1.console.aws.amazon.com/ecs/v2/create-task-definition?region=us-east-1) and create a new `Task definition`.
+
+- Task definition family: testpdf-task
+- Launch type: AWS Fargate
+- OS: Linux/x86_64
+- CPU: .5 vCpu
+- Memory: 1GB
+- Container Details
+  - name: testpdf
+  - Image URI: Go to ECR and copy your repo URI, add suffix `:latest` so we can specify version.
+- Port mapping: set whatever port docker is exposing, dotnet apps expose port 80
+
+Click `Create` and now you will see your Task at version 1: `testpdf-task:1`
+
+Go back to your cluster in `Tasks` tab and click `Run new task` button
+
+### Create Task
+
+- Compute Options: `Capacity provider strategy`
+- Capacity provider strategy: `Use custom (Advanced)`
+- Capacity provider: `Fargate`, base `0`, Weight `1`
+- Platform version: `Latest`
+
+#### Deployment configuration
+
+- Application type: Service
+- Task definition: uncheck Specify the revision manually
+- Family: `testpdf-task`
+- Revision: `1 (LATEST)`
+- Service name: `testpdf-service`
+- Desired tasks: 1
+
+Leave Networking, Service Connect as default
+
+#### Load Balancing
+
+- Load balancer type: `Application Load Balancer`
+- Application Load Balancer: Create a new load balancer
+- Load balancer name: `testpdf-lb`
+
+<img src="./images/load-balancer-settings.png" />
+
+#### Security groups
+
+<img src="./images/edit-inbound-security-group.png" />
+
+<img src="./images/edit-outbound-security-group.png" />
+
